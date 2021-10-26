@@ -1,28 +1,35 @@
+// Se importa la librería para el display
 #include <LiquidCrystal.h>
+
+// Se inicializa el lcd display, asignandole sus puertos respectivos
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2); // RS, E, D4, D5, D6, D7
+
+// Se crean variables para la cantidad de "comida" y para el puerto del botón
 int food = 0;
 int PIN = 7;
 
-
 void setup() {
+  // Se inicializa el monitor o consola
   Serial.begin(9600);
   
+  // Se designa el pin del botón como entrada
   pinMode(PIN, INPUT_PULLUP);
   
+  // Comienza el display, utilizando todas sus 16 columnas y 2 filas
   lcd.begin(16, 2);
-  
 }
 
 void loop() {
+  // Condicional para saber si el botón esta presionado
   if (digitalRead(PIN) == HIGH) {
     food = food + 2;
-  } else if (food > 0){
+  } else if (food > 0){ // Si no lo está, se resta comida
     food --;
-  } else if (food == 0) {
+  } else if (food == 0) { // Pero deja de restar si la comida ya es igual a 0
     food = 0;
   }
   
-  
+  // Según el número de comida disponible, cambia la imagen del display
   if (food < 1) {
     image00();
   } else if (food <= 2) {
@@ -63,11 +70,14 @@ void loop() {
     image18();
   }
   
+  // Imprime en la consola el número de comida
   Serial.print(food);
-  delay(600);
   
+  // Crea un delay de 600ms cada ciclo 
+  delay(600);
 }
 
+// 18 funciones para crear cada imagen (creadas en: https://tusindfryd.github.io/screenduino/)
 void image00() {
   lcd.clear();
 
