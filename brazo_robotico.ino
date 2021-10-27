@@ -1,26 +1,33 @@
+// Se incluye la librería de los servomotores
 #include <Servo.h>
 
+// Se inicializan los servos
 Servo servo1; //Servos
 Servo servo2;
 Servo servo3;
   
 /*
-const int LED1 = 2; //LEDs
+const int LED1 = 2; //LEDs para marcar las posiciones guardadas (no utilizado)
 const int LED2 = 3;
 const int LED3 = 4;
 const int LED4 = 7;
 const int LED5 = 8;
 */
+
+// Variables con el puerto digital para cada botón
 const int button1 = 13; //Buttons
 const int button2 = 12;
 
+// Variables dependientes de los botones
 int button1Presses = 0; //Button values
 boolean button2Pressed = false;
 
+// Variables con el puerto análogo para los potenciómetros
 const int pot1 = A2; //Potentimeters
 const int pot2 = A1; 
 const int pot3 = A0;
 
+// Variables para los valores de los potenciometros y su conversión a ángulo
 int pot1Val; //Potentimeter values
 int pot2Val;
 int pot3Val;
@@ -28,41 +35,49 @@ int pot1Angle;
 int pot2Angle;
 int pot3Angle;
 
+// Variables que guardan hasta 5 posiciones de cada motor
 int servo1PosSaves[] = {1,1,1,1,1}; //position saves
 int servo2PosSaves[] = {1,1,1,1,1};
 int servo3PosSaves[] = {1,1,1,1,1};
 
 void setup() {
-  servo1.attach(5); // Set up everything and will run once; attach servos and define the pin modes
+  servo1.attach(5); // Configura todo y corre una vez, defines los motores y les asignas un puerto
   servo2.attach(6);
   servo3.attach(9);
   /*
-  pinMode(LED1, OUTPUT);
+  pinMode(LED1, OUTPUT); // Se definen los puertos de los leds como salidas (no utilizado)
   pinMode(LED2, OUTPUT);
   pinMode(LED3, OUTPUT);
   pinMode(LED4, OUTPUT);
   pinMode(LED5, OUTPUT); */
+  
+  // se definen los puertos de los botones como entradas
   pinMode(button1, INPUT);
   pinMode(button2, INPUT);
-
+  
+  // Se inicializa el monitor serial
   Serial.begin(9600);
 }
 
-void loop() {
-  // put your main code here, to run repeatedly: 
-  pot1Val = analogRead(pot1); // This will read the values from the potentimeters and store it...
-  pot1Angle = map(pot1Val, 0, 1023, 0, 179); // ... and this will map the values from the potentiometers to values the servos can use and store it for later use
+void loop() { 
+  pot1Val = analogRead(pot1); // Le el valor análogo del potenciómetro y lo guarda
+  pot1Angle = map(pot1Val, 0, 1023, 0, 179); // Usa map(), para transformar los valores de 0 a 1024 a grados de 0 a 179 grados
   pot2Val = analogRead(pot2); 
   pot2Angle = map(pot2Val, 0, 1023, 0, 179);
   pot3Val = analogRead(pot3);
   pot3Angle = map(pot3Val, 0, 1023, 0, 179);
   
-  servo1.write(pot1Angle); // These will make the servos move to the mapped angles
+  // Causas que el servo se mueva al ángulo específicado
+  servo1.write(pot1Angle); 
   servo2.write(pot2Angle);
   servo3.write(pot3Angle);
   
-  if(digitalRead(button1) == HIGH){ // This will check how many times button1 is pressed and save the positions to an array depending on how many times it is pressed; switch/case works like a if statement
+  // Condicional if que revisa cuantas veces el botón se ha presionado
+  if(digitalRead(button1) == HIGH){ 
+    // Añade uno al número de veces que se ha presionado el botón
     button1Presses++;
+    
+    // Condicional switch (funciona casi igual que un if), revisa cuantas veces se ha presionado el botón y guarda los grados
     switch(button1Presses){
       case 1:
         servo1PosSaves[0] = pot1Angle;
@@ -110,18 +125,21 @@ void loop() {
         Serial.println("Pos 5 Saved");
         break;
       case 6:
+        // Si se ha presionado más de 5 veces, el contador se reincia
         button1Presses = 0;
         break;
     }
   }
-
-  if(digitalRead(button2) == HIGH){ // Pretty self-explnatory here
+  
+  // Revisa si el segundo botón ha sido presionado
+  if(digitalRead(button2) == HIGH){ 
     button2Pressed = true;   
   } else {
     button2Pressed = false;
   }
   
-  if(button2Pressed){ // if the boolean button2Press is true, then the servos will run though all their saved positions
+  // Condicional que revisa si el botón ha sido presionado, si así es, corre las 5 posiciones guardadas con 1050ms de delay gracias a un ciclo for
+  if(button2Pressed){ 
     for(int i = 0; i < 5; i++){
         servo1.write(servo1PosSaves[i]);
         servo2.write(servo2PosSaves[i]);
@@ -133,5 +151,7 @@ void loop() {
         delay(1050);
       }
   }
+  
+  // Causa que el bucle se corra cada 300ms
   delay(300);
 } 
