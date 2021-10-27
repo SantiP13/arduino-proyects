@@ -1,4 +1,7 @@
+// Se incluye la librería para el LCD Display
 #include <LiquidCrystal.h>
+
+// Inicialización de variables
 long tiempo_pres = 0;
 long tiempo_inicio = 0;
 long tiempo_final = 0;
